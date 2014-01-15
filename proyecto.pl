@@ -64,32 +64,61 @@ imprimir(X):-
 	imprimirFila(8,X).
 
 
-%Verifica si el jugador uno tiene una jugada valida de movimiento en diagonal
+
+%Verifica que no me salga del tablero, al hacer un movimiento a
+%la posicion (X,Y)
+verif(X,Y):-
+	X<9,
+	X>0,
+	Y<9,
+	Y>0.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Movimientos jugador 1.
+
+%Verifica si el jugador 1 tiene una jugada valida de movimiento en diagonal
 mov1(X1,Y1,X2,Y2):-
-	tablero(T),
 	existeFicha(X1,Y1,1),
 	X2 is (X1+1),
 	Y2 is (Y1+1),
-	X2<9,
-	X2>0,
-	Y2<9,
-	Y2>0,
+	verif(X2,Y2),
 	not(existeFicha(X2,Y2,_)),
 	!.
 mov1(X1,Y1,X2,Y2):-
-	tablero(T),
 	existeFicha(X1,Y1,1),
 	X2 is (X1+1),
 	Y2 is (Y1-1),
-	X2<9,
-	X2>0,
-	Y2<9,
-	Y2>0,
+	verif(X2,Y2),
 	not(existeFicha(X2,Y2,_)),
 	!.
+%Verifica para comer a izquierda
+mov1(X1,Y1,X2,Y2):-
+	existeFicha(X1,Y1,1),
+	XF is X1+1,
+	YF is Y1-1,
+	(existeFicha(XF,YF,2);existeFicha(XF,YF,4)),
+	verif(X2,Y2),
+	not(existeFicha(X2,Y2,_)),
+	X2 is X1+2,
+	Y2 is Y1-2.
+
+%Verifica para comer a derecha
+mov1(X1,Y1,X2,Y2):-
+	existeFicha(X1,Y1,1),
+	XF is X1+1,
+	YF is Y1+1,
+	(existeFicha(XF,YF,2);existeFicha(XF,YF,4)),
+	verif(X2,Y2),
+	not(existeFicha(X2,Y2,_)),
+	X2 is X1+2,
+	Y2 is Y1+2.
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %jugada(X1,Y1,X2,Y2) :- teTocaJugar,validajug,mover,guardartab,!.
 
 
