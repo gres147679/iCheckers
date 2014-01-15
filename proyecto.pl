@@ -12,7 +12,12 @@ jugar:- assert(ficha(1,2,1)),assert(ficha(1,4,1)),
 	assert(ficha(7,6,2)),assert(ficha(7,8,2)),
 	assert(ficha(8,1,2)),assert(ficha(8,3,2)),
 	assert(ficha(8,5,2)),assert(ficha(8,7,2)).
-	
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Imprimir el tablero	
+
 impCar(X):-
 	X is 1,
 	write('|< | ').
@@ -62,6 +67,7 @@ imprimir:-
 	imprimirFila(8).
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Verifica que no me salga del tablero, al hacer un movimiento a
 %la posicion (X,Y)
@@ -70,6 +76,21 @@ verif(X,Y):-
 	X>0,
 	Y<9,
 	Y>0.
+
+
+%Corona ficha de jugador 1
+corona1(X,Y):-
+	ficha(X,Y,1),
+	Y is 8,
+	retract(ficha(X,Y,1)),
+	assert(ficha(X,Y,3)).
+
+%Corona ficha de jugador 2
+corona2(X,Y):-
+	ficha(X,Y,2),
+	Y is 1,
+	retract(ficha(X,Y,2)),
+	assert(ficha(X,Y,4)).
 
 
 
@@ -113,6 +134,9 @@ mov1(X1,Y1,X2,Y2):-
 	not(ficha(X2,Y2,_)),
 	X2 is X1+2,
 	Y2 is Y1+2.
+
+
+%Movimientos para fichas reinas
 
 
 
