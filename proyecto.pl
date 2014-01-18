@@ -221,12 +221,26 @@ mov2(X1,Y1,X2,Y2):-
 
 
 
+%Imprime el mensaje de la jugada de el jugador W, ya sea que le gane a Z
+%o simplemente sea un movimiento
+mensaje(Z,W):-
+	ficha(X,Y,Z),
+	write('Movimiento jugador '),
+	write(W),
+	writeln(': ').
+mensaje(Z,W):-
+	not(ficha(X,Y,Z)),
+	write('Ha ganado el jugador '),
+	writeln(W).
+
+
+
 jugada(X1,Y1,X2,Y2) :- 
 	tocaJugador(1),
 	mov1(X1,Y1,X2,Y2),
 	retract(tocaJugador(1)),
 	assert(tocaJugador(2)),
-	writeln('Movimiento jugador 1:'),
+	mensaje(2,1),
 	imprimir,
 	!.
 
@@ -235,7 +249,7 @@ jugada(X1,Y1,X2,Y2):-
 	mov2(X1,Y1,X2,Y2),
 	retract(tocaJugador(2)),
 	assert(tocaJugador(1)),
-	writeln('Movimiento jugador 2:'),
+	mensaje(1,2),
 	imprimir,
 	!.
 	
