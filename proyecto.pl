@@ -11,7 +11,8 @@ jugar:- assert(ficha(1,2,1)),assert(ficha(1,4,1)),
 	assert(ficha(7,2,2)),assert(ficha(7,4,2)),
 	assert(ficha(7,6,2)),assert(ficha(7,8,2)),
 	assert(ficha(8,1,2)),assert(ficha(8,3,2)),
-	assert(ficha(8,5,2)),assert(ficha(8,7,2)).
+	assert(ficha(8,5,2)),assert(ficha(8,7,2)),
+	assert(tocaJugador(1)).
 
 
 
@@ -66,6 +67,10 @@ imprimir:-
 	imprimirFila(7),
 	imprimirFila(8).
 
+%Mueve una ficha indicada
+moverF(X1,Y1,X2,Y2):-
+	retract(ficha(X1,Y1,Z)),
+	assert(ficha(X2,Y2,Z)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -81,17 +86,25 @@ verif(X,Y):-
 %Corona ficha de jugador 1
 corona1(X,Y):-
 	ficha(X,Y,1),
-	Y is 8,
+	X is 8,
 	retract(ficha(X,Y,1)),
-	assert(ficha(X,Y,3)).
+	assert(ficha(X,Y,3)),
+	!.
+
+%no corono
+corona1(_,_).
+	
 
 %Corona ficha de jugador 2
 corona2(X,Y):-
 	ficha(X,Y,2),
-	Y is 1,
+	X is 1,
 	retract(ficha(X,Y,2)),
-	assert(ficha(X,Y,4)).
+	assert(ficha(X,Y,4)),
+	!.
 
+%No corono
+corona2(_,_).
 
 
 
@@ -105,6 +118,8 @@ mov1(X1,Y1,X2,Y2):-
 	Y2 is (Y1+1),
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
+	moverF(X1,Y1,X2,Y2),
+	corona1(X2,Y2),
 	!.
 mov1(X1,Y1,X2,Y2):-
 	ficha(X1,Y1,1),
@@ -112,6 +127,8 @@ mov1(X1,Y1,X2,Y2):-
 	Y2 is (Y1-1),
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
+	moverF(X1,Y1,X2,Y2),
+	corona1(X2,Y2),
 	!.
 %Verifica para comer a izquierda
 mov1(X1,Y1,X2,Y2):-
@@ -122,7 +139,11 @@ mov1(X1,Y1,X2,Y2):-
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
 	X2 is X1+2,
-	Y2 is Y1-2.
+	Y2 is Y1-2,
+	moverF(X1,Y1,X2,Y2),
+	corona1(X2,Y2),
+	retract(ficha(XF,YF,_)),
+	!.
 
 %Verifica para comer a derecha
 mov1(X1,Y1,X2,Y2):-
@@ -133,22 +154,88 @@ mov1(X1,Y1,X2,Y2):-
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
 	X2 is X1+2,
-	Y2 is Y1+2.
+	Y2 is Y1+2,
+	moverF(X1,Y1,X2,Y2),
+	corona1(X2,Y2),
+	retract(ficha(XF,YF,_)),
+	!.
 
 
 %Movimientos para fichas reinas
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Movimientos jugador 2.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%jugada(X1,Y1,X2,Y2) :- teTocaJugar,validajug,mover,guardartab,!.
+%Verifica si el jugador 1 tiene una jugada valida de movimiento en diagonal
+mov2(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,2),
+	X2 is (X1-1),
+	Y2 is (Y1+1),
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	moverF(X1,Y1,X2,Y2),
+	corona2(X2,Y2),
+	!.
+mov2(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,2),
+	X2 is (X1-1),
+	Y2 is (Y1-1),
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	moverF(X1,Y1,X2,Y2),
+	corona2(X2,Y2),
+	!.
+%Verifica para comer a izquierda
+mov2(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,2),
+	XF is X1-1,
+	YF is Y1-1,
+	(ficha(XF,YF,1);ficha(XF,YF,3)),
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	X2 is X1-2,
+	Y2 is Y1-2,
+	moverF(X1,Y1,X2,Y2),
+	retract(ficha(XF,YF,_)),
+	corona2(X2,Y2),
+	!.
+
+%Verifica para comer a derecha
+mov2(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,2),
+	XF is X1-1,
+	YF is Y1+1,
+	(ficha(XF,YF,1);ficha(XF,YF,3)),
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	X2 is X1-2,
+	Y2 is Y1+2,
+	moverF(X1,Y1,X2,Y2),
+	retract(ficha(XF,YF,_)),
+	corona2(X2,Y2),
+	!.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
-jugadaAux(X1,Y1,X2,Y2,Color) :- 
-	nonvar(X1),
-	nonvar(X2),
-	nonvar(Y1),
-	nonvar(Y2),
-	tablero(X),
-	var(X).
+jugada(X1,Y1,X2,Y2) :- 
+	tocaJugador(1),
+	mov1(X1,Y1,X2,Y2),
+	retract(tocaJugador(1)),
+	assert(tocaJugador(2)),
+	writeln('Movimiento jugador 1:'),
+	imprimir,
+	!.
+
+jugada(X1,Y1,X2,Y2):-
+	tocaJugador(2),
+	mov2(X1,Y1,X2,Y2),
+	retract(tocaJugador(2)),
+	assert(tocaJugador(1)),
+	writeln('Movimiento jugador 2:'),
+	imprimir,
+	!.
+	
