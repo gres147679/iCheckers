@@ -225,7 +225,7 @@ mov2(X1,Y1,X2,Y2):-
 %o simplemente sea un movimiento
 mensaje(Z,W):-
 	ficha(X,Y,Z),
-	write('Movimiento jugador '),
+	write('Movimiento del jugador '),
 	write(W),
 	writeln(': ').
 mensaje(Z,W):-
@@ -234,7 +234,7 @@ mensaje(Z,W):-
 	writeln(W).
 
 
-
+%predicado utilizado para hacer una jugada valida
 jugada(X1,Y1,X2,Y2) :- 
 	tocaJugador(1),
 	mov1(X1,Y1,X2,Y2),
