@@ -227,18 +227,19 @@ mov2(X1,Y1,X2,Y2):-
 
 
 sigoComiendo(X1,Y1):-
-	puedoComer(X1,Y1,XN,YN,_,_),
+	puedoComer(X1,Y1,_,_,_,_),
+	imprimir,
 	writeln('Debe seguir comiendo con la ficha que venia comiendo'),
 	writeln('Diga a que posicion quiere ir, diga su X'),
 	read(X2),
 	writeln('ahora su Y:'),
 	read(Y2),
 	puedoComer(X1,Y1,XN2,YN2,X2,Y2),
-	retract(ficha(XN2,YN2)),
+	retract(ficha(XN2,YN2,_)),
 	retract(ficha(X1,Y1,Z)),
 	assert(ficha(X2,Y2,Z)),
-	imprimir,
 	sigoComiendo(X2,Y2).
+
 
 
 sigoComiendo(X1,Y1):-
