@@ -143,6 +143,7 @@ mov1(X1,Y1,X2,Y2):-
 	moverF(X1,Y1,X2,Y2),
 	corona1(X2,Y2),
 	retract(ficha(XF,YF,_)),
+	sigoComiendo(X2,Y2),
 	!.
 
 %Verifica para comer a derecha
@@ -158,6 +159,7 @@ mov1(X1,Y1,X2,Y2):-
 	moverF(X1,Y1,X2,Y2),
 	corona1(X2,Y2),
 	retract(ficha(XF,YF,_)),
+	sigoComiendo(X2,Y2),
 	!.
 
 
@@ -199,6 +201,7 @@ mov2(X1,Y1,X2,Y2):-
 	moverF(X1,Y1,X2,Y2),
 	retract(ficha(XF,YF,_)),
 	corona2(X2,Y2),
+	sigoComiendo(X2,Y2),
 	!.
 
 %Verifica para comer a derecha
@@ -214,11 +217,134 @@ mov2(X1,Y1,X2,Y2):-
 	moverF(X1,Y1,X2,Y2),
 	retract(ficha(XF,YF,_)),
 	corona2(X2,Y2),
+	sigoComiendo(X2,Y2),
+	!.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%predicado que indica si una persona come, luego 
+%de una ficha comida, y da los pasos validos a partir de la posicion,
+%actual de esa ficha
+
+
+sigoComiendo(X1,Y1):-
+	puedoComer(X1,Y1,XN,YN,_,_),
+	writeln('Debe seguir comiendo con la ficha que venia comiendo'),
+	writeln('Diga a que posicion quiere ir, diga su X'),
+	read(X2),
+	writeln('ahora su Y:'),
+	read(Y2),
+	puedoComer(X1,Y1,XN2,YN2,X2,Y2),
+	retract(ficha(XN2,YN2)),
+	retract(ficha(X1,Y1,Z)),
+	assert(ficha(X2,Y2,Z)),
+	imprimir,
+	sigoComiendo(X2,Y2).
+
+
+sigoComiendo(X1,Y1):-
+	puedoComer(X1,Y1,_,_,_,_),
+	sigoComiendo(X1,Y1).
+
+
+sigoComiendo(X1,Y1):- not(puedoComer(X1,Y1,_,_,_,_)).
+
+
+
+%Predicado que indica que fichas pueden comer en cierto momento
+
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	(ficha(X1,Y1,1);ficha(X1,Y1,3)),
+	XN is (X1+1),
+	YN is (Y1+1),
+	(ficha(XN,YN,2);ficha(XN,YN,4)),
+	X2 is X1+2,
+	Y2 is Y1+2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	!.
+
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	(ficha(X1,Y1,1);ficha(X1,Y1,3)),
+	XN is (X1+1),
+	YN is (Y1-1),
+	(ficha(XN,YN,2);ficha(XN,YN,4)),
+	X2 is X1+2,
+	Y2 is Y1-2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
 	!.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	(ficha(X1,Y1,2);ficha(X1,Y1,4)),
+	XN is (X1-1),
+	YN is (Y1+1),
+	(ficha(XN,YN,1);ficha(XN,YN,3)),
+	X2 is X1-2,
+	Y2 is Y1+2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	!.
 
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	(ficha(X1,Y1,2);ficha(X1,Y1,4)),
+	XN is (X1-1),
+	YN is (Y1-1),
+	(ficha(XN,YN,1);ficha(XN,YN,3)),
+	X2 is X1-2,
+	Y2 is Y1-2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	!.
+
+
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	ficha(X1,Y1,3),
+	XN is (X1-1),
+	YN is (Y1+1),
+	(ficha(XN,YN,2);ficha(XN,YN,4)),
+	X2 is X1-2,
+	Y2 is Y1+2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	!.
+
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	ficha(X1,Y1,3),
+	XN is (X1-1),
+	YN is (Y1-1),
+	(ficha(XN,YN,2);ficha(XN,YN,4)),
+	X2 is X1-2,
+	Y2 is Y1-2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	!.
+
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	ficha(X1,Y1,4),
+	XN is (X1+1),
+	YN is (Y1+1),
+	(ficha(XN,YN,1);ficha(XN,YN,3)),
+	X2 is X1+2,
+	Y2 is Y1+2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	!.
+
+puedoComer(X1,Y1,XN,YN,X2,Y2):-
+	ficha(X1,Y1,4),
+	XN is (X1+1),
+	YN is (Y1-1),
+	(ficha(XN,YN,1);ficha(XN,YN,3)),
+	X2 is X1+2,
+	Y2 is Y1-2,
+	verif(X2,Y2),
+	not(ficha(X2,Y2,_)),
+	!.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %Imprime el mensaje de la jugada de el jugador W, ya sea que le gane a Z
