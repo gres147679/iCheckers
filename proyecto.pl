@@ -117,31 +117,46 @@ corona2(X,Y):-
 corona2(_,_).
 
 
-
+%Nota: el predicado ejecutar estara en varias partes del archivo para hacer
+%Mas facil su comprension. Lo que hace este predicado, es que dado
+%Un movimiento valido, haga todo lo correspondiente 
+%para que el movimiento se ejecute de una manera correcta.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Movimientos jugador 1.
 
 %Verifica si el jugador 1 tiene una jugada valida de movimiento en diagonal
-mov1(X1,Y1,X2,Y2):-
+mov1(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,1),
 	X2 is (X1+1),
 	Y2 is (Y1+1),
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
-	moverF(X1,Y1,X2,Y2),
-	corona1(X2,Y2),
+	ejecutar(X1,Y1,X2,Y2,TMP,1),
 	!.
-mov1(X1,Y1,X2,Y2):-
+
+
+%Si el cuarto parametro es 0 quiere decir
+%que solo se quiere verificar una jugada, mas no ejecutarla
+
+ejecutar(_,_,_,_,0,_).
+
+ejecutar(X1,Y1,X2,Y2,1,1):-
+	moverF(X1,Y1,X2,Y2),
+	corona1(X2,Y2).
+
+
+mov1(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,1),
 	X2 is (X1+1),
 	Y2 is (Y1-1),
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
-	moverF(X1,Y1,X2,Y2),
-	corona1(X2,Y2),
+	ejecutar(X1,Y1,X2,Y2,TMP,1),
 	!.
+
+
 %Verifica para comer a izquierda
-mov1(X1,Y1,X2,Y2):-
+mov1(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,1),
 	XF is X1+1,
 	YF is Y1-1,
@@ -150,27 +165,39 @@ mov1(X1,Y1,X2,Y2):-
 	not(ficha(X2,Y2,_)),
 	X2 is X1+2,
 	Y2 is Y1-2,
+	ejecutar(X1,Y1,X2,Y2,TMP,2),
+	!.
+
+ejecutar(X1,Y1,X2,Y2,TMP,2):-
+	XF is X1+1,
+	YF is Y1-1,
 	moverF(X1,Y1,X2,Y2),
 	corona1(X2,Y2),
 	retract(ficha(XF,YF,_)),
-	sigoComiendo(X2,Y2),
-	!.
+	sigoComiendo(X2,Y2).
+
 
 %Verifica para comer a derecha
-mov1(X1,Y1,X2,Y2):-
-	ficha(X1,Y1,1),
+mov1(X1,Y1,X2,Y2,TMP):-
 	XF is X1+1,
 	YF is Y1+1,
+	ficha(X1,Y1,1),
 	(ficha(XF,YF,2);ficha(XF,YF,4)),
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
 	X2 is X1+2,
 	Y2 is Y1+2,
+	ejecutar(X1,Y1,X2,Y2,TMP,3),
+	!.
+
+ejecutar(X1,Y1,X2,Y2,TMP,3):-
+	XF is X1+1,
+	YF is Y1+1,
 	moverF(X1,Y1,X2,Y2),
 	corona1(X2,Y2),
 	retract(ficha(XF,YF,_)),
-	sigoComiendo(X2,Y2),
-	!.
+	sigoComiendo(X2,Y2).
+
 
 
 %Movimientos para fichas reinas jugador 1
@@ -186,17 +213,17 @@ verificarReina11(X,Y,Z,W,P1,P2):-
 	verificarReina11(XN,YN,Z,W,P1,P2).
 
 
-mov1(X1,Y1,X2,Y2):-
+mov1(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,3),
-	movimientoReina(X1,Y1,X2,Y2).
+	movimientoReina(X1,Y1,X2,Y2,TMP).
 
 %Movimiento en el que una reina come
-mov1(X1,Y1,X2,Y2):-
+mov1(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,3),
-	movimientoReina2(X1,Y1,X2,Y2,2,4).
+	movimientoReina2(X1,Y1,X2,Y2,2,4,TMP).
 
 
-movimientoReina(X1,Y1,X2,Y2):-
+movimientoReina(X1,Y1,X2,Y2,TMP):-
 	not(ficha(X2,Y2,_)),
 	XR is X1-X2,
 	YR is Y1-Y2,
@@ -209,10 +236,13 @@ movimientoReina(X1,Y1,X2,Y2):-
 	XN is X1+P1,
 	YN is Y1+P2,
 	verificarReina11(XN,YN,X2,Y2,P1,P2),
+	ejecutar(X1,Y1,X2,Y2,TMP,4).
+
+ejecutar(X1,Y1,X2,Y2,1,4):-
 	moverF(X1,Y1,X2,Y2).
 
 
-movimientoReina2(X1,Y1,X2,Y2,Z,W):-
+movimientoReina2(X1,Y1,X2,Y2,Z,W,TMP):-
 	not(ficha(X2,Y2,_)),
 	XR is X1-X2,
 	YR is Y1-Y2,
@@ -229,38 +259,50 @@ movimientoReina2(X1,Y1,X2,Y2,Z,W):-
 	YB is Y2-P2,
 	verificarReina11(XN,YN,XB,YB,P1,P2),
 	(ficha(XB,YB,Z);ficha(XB,YB,W)),
+	ejecutar(X1,X2,Y1,Y2,TMP,5).
+
+ejecutar(X1,Y1,X2,Y2,1,5):-
+	tipoPaso(X1-X2,P1),
+	tipoPaso(Y1-Y2,P2),
+	XB is X2-P1,
+	YB is Y2-P2,
 	retract(ficha(XB,YB,_)),
 	moverF(X1,Y1,X2,Y2),
 	sigoComiendo(X2,Y2).
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Movimientos jugador 2.
 
 %Verifica si el jugador 1 tiene una jugada valida de movimiento en diagonal
-mov2(X1,Y1,X2,Y2):-
+mov2(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,2),
 	X2 is (X1-1),
 	Y2 is (Y1+1),
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
+	ejecutar(X1,Y1,X2,Y2,TMP,6),
+	!.
+
+ejecutar(X1,Y1,X2,Y2,1,6):-
 	moverF(X1,Y1,X2,Y2),
 	corona2(X2,Y2),
 	!.
-mov2(X1,Y1,X2,Y2):-
+
+mov2(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,2),
 	X2 is (X1-1),
 	Y2 is (Y1-1),
 	verif(X2,Y2),
 	not(ficha(X2,Y2,_)),
-	moverF(X1,Y1,X2,Y2),
-	corona2(X2,Y2),
+	ejecutar(X1,Y1,X2,Y2,TMP,6),
 	!.
 
+
+
+
 %Verifica para comer a izquierda
-mov2(X1,Y1,X2,Y2):-
+mov2(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,2),
 	XF is X1-1,
 	YF is Y1-1,
@@ -269,14 +311,21 @@ mov2(X1,Y1,X2,Y2):-
 	not(ficha(X2,Y2,_)),
 	X2 is X1-2,
 	Y2 is Y1-2,
+	ejecutar(X1,Y1,X2,Y2,TMP,7),
+	!.
+
+ejecutar(X1,Y1,X2,Y2,1,7):-
+	XF is X1-1,
+	YF is Y1-1,
 	moverF(X1,Y1,X2,Y2),
 	retract(ficha(XF,YF,_)),
 	corona2(X2,Y2),
 	sigoComiendo(X2,Y2),
 	!.
 
+
 %Verifica para comer a derecha
-mov2(X1,Y1,X2,Y2):-
+mov2(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,2),
 	XF is X1-1,
 	YF is Y1+1,
@@ -285,11 +334,18 @@ mov2(X1,Y1,X2,Y2):-
 	not(ficha(X2,Y2,_)),
 	X2 is X1-2,
 	Y2 is Y1+2,
+	ejecutar(X1,Y1,X2,Y2,TMP,8),
+	!.
+
+ejecutar(X1,Y1,X2,Y2,1,8):-
+	XF is X1-1,
+	YF is Y1+1,
 	moverF(X1,Y1,X2,Y2),
 	retract(ficha(XF,YF,_)),
 	corona2(X2,Y2),
 	sigoComiendo(X2,Y2),
 	!.
+
 
 
 %Verifica pasos de una reina para el jugador 2
@@ -454,14 +510,21 @@ mensaje(Z,W):-
 	retract(tocaJugador(_)).
 
 
-%mensaje2(Z,W):-
-%	not(jugada(X,Y,X2,Y2)),
-%	write('No puede jugar el jugador '),
-%	writeln(Z),
-%	write('Debe jugar nuevamente el jugador '),
-%	writeln(W),
-%	retract(tocaJugador(Z)),
-%	assert(tocaJugador(W)).
+mensaje2(1,2):-
+	not(mov1(X,Y,X2,Y2,0)),
+	write('No puede jugar el jugador 1'),
+	write('Debe jugar nuevamente el jugador 2'),
+	retract(tocaJugador(1)),
+	assert(tocaJugador(2)),
+	!.
+
+mensaje2(2,1):-
+	not(mov2(X,Y,X2,Y2,0)),
+	write('No puede jugar el jugador 2'),
+	write('Debe jugar nuevamente el jugador 1'),
+	retract(tocaJugador(1)),
+	assert(tocaJugador(2)),
+	!.
 
 mensaje2(Z,W):-
 	write('Juega jugador '),
@@ -471,7 +534,7 @@ mensaje2(Z,W):-
 %predicado utilizado para hacer una jugada valida
 jugada(X1,Y1,X2,Y2) :- 
 	tocaJugador(1),
-	mov1(X1,Y1,X2,Y2),
+	mov1(X1,Y1,X2,Y2,1),
 	retract(tocaJugador(1)),
 	assert(tocaJugador(2)),
 	mensaje(2,1),
@@ -479,7 +542,7 @@ jugada(X1,Y1,X2,Y2) :-
 
 jugada(X1,Y1,X2,Y2):-
 	tocaJugador(2),
-	mov2(X1,Y1,X2,Y2),
+	mov2(X1,Y1,X2,Y2,1),
 	retract(tocaJugador(2)),
 	assert(tocaJugador(1)),
 	mensaje(1,2),
