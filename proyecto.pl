@@ -5,7 +5,7 @@ iniciarTablero:-
 	assert(ficha(1,6,1)),assert(ficha(1,8,1)),
 	assert(ficha(2,1,1)),assert(ficha(2,3,1)),
 	assert(ficha(2,5,1)),assert(ficha(2,7,1)),
-	assert(ficha(3,2,1)),assert(ficha(3,4,1)),
+	assert(ficha(3,2,3)),assert(ficha(3,4,1)),
 	assert(ficha(3,6,1)),assert(ficha(3,8,1)),
 	assert(ficha(6,1,2)),assert(ficha(6,3,2)),
 	assert(ficha(6,5,2)),assert(ficha(6,7,2)),
@@ -17,7 +17,10 @@ iniciarTablero:-
 %Predicado que comienza el juego
 jugar:-
 	iniciarTablero,
-	assert(tocaJugador(1)).
+	assert(tocaJugador(1)),
+	writeln('Comenzo el juego'),
+	imprimir,
+	writeln('Juega jugador 1').
 
 
 
@@ -75,7 +78,9 @@ imprimir:-
 %Mueve una ficha indicada
 moverF(X1,Y1,X2,Y2):-
 	retract(ficha(X1,Y1,Z)),
-	assert(ficha(X2,Y2,Z)).
+	assert(ficha(X2,Y2,Z)),
+	corona1(X2,Y2),
+	corona2(X2,Y2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -168,7 +173,59 @@ mov1(X1,Y1,X2,Y2):-
 	!.
 
 
-%Movimientos para fichas reinas
+%Movimientos para fichas reinas jugador 1
+
+tipoPaso(X,Y):- X<0, Y is (1).
+tipoPaso(X,Y):- X>0, Y is (-1).
+
+verificarReina11(X,Y,X,Y,_,_):- !.
+verificarReina11(X,Y,Z,W,P1,P2):-
+	not(ficha(X,Y,_)),
+	XN is X+P1,
+	YN is Y+P2,
+	verificarReina11(XN,YN,Z,W,P1,P2).
+
+
+mov1(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,3),
+	not(ficha(X2,Y2,_)),
+	XR is X1-X2,
+	YR is Y1-Y2,
+	abs(XR,PASO1),
+	abs(YR,PASO2),
+	PASO1 is PASO2,
+	verif(X2,Y2),
+	tipoPaso(X1-X2,P1),
+	tipoPaso(Y1-Y2,P2),
+	XN is X1+P1,
+	YN is Y1+P2,
+	verificarReina11(XN,YN,X2,Y2,P1,P2),
+	moverF(X1,Y1,X2,Y2).
+
+
+mov1(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,3),
+	not(ficha(X2,Y2,_)),
+	XR is X1-X2,
+	YR is Y1-Y2,
+	abs(XR,PASO1),
+	abs(YR,PASO2),
+	PASO1 is PASO2,
+	PASO1 >= 2,
+	verif(X2,Y2),
+	tipoPaso(X1-X2,P1),
+	tipoPaso(Y1-Y2,P2),
+	XN is X1+P1,
+	YN is Y1+P2,
+	XB is X2-P1,
+	YB is Y2-P2,
+	verificarReina11(XN,YN,XB,YB,P1,P2),
+	(ficha(XB,YB,2);ficha(XB,YB,4)),
+	retract(ficha(XB,YB,_)),
+	moverF(X1,Y1,X2,Y2),
+	sigoComiendo(X2,Y2).
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -193,6 +250,7 @@ mov2(X1,Y1,X2,Y2):-
 	moverF(X1,Y1,X2,Y2),
 	corona2(X2,Y2),
 	!.
+
 %Verifica para comer a izquierda
 mov2(X1,Y1,X2,Y2):-
 	ficha(X1,Y1,2),
@@ -366,7 +424,7 @@ mensaje(Z,W):-
 	not(ficha(X,Y,Z)),
 	write('Ha ganado el jugador '),
 	write(W),
-	writeln(', felicidades. Tablero final:')
+	writeln(', felicidades. Tablero final:'),
 	imprimir,
 	retract(ficha(_,_,_)),
 	retract(tocaJugador(_)).
