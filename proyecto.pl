@@ -5,7 +5,7 @@ iniciarTablero:-
 	assert(ficha(1,6,1)),assert(ficha(1,8,1)),
 	assert(ficha(2,1,1)),assert(ficha(2,3,1)),
 	assert(ficha(2,5,1)),assert(ficha(2,7,1)),
-	assert(ficha(3,2,3)),assert(ficha(3,4,1)),
+	assert(ficha(3,2,1)),assert(ficha(3,4,1)),
 	assert(ficha(3,6,1)),assert(ficha(3,8,1)),
 	assert(ficha(6,1,2)),assert(ficha(6,3,2)),
 	assert(ficha(6,5,2)),assert(ficha(6,7,2)),
@@ -188,6 +188,15 @@ verificarReina11(X,Y,Z,W,P1,P2):-
 
 mov1(X1,Y1,X2,Y2):-
 	ficha(X1,Y1,3),
+	movimientoReina(X1,Y1,X2,Y2).
+
+%Movimiento en el que una reina come
+mov1(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,3),
+	movimientoReina2(X1,Y1,X2,Y2,2,4).
+
+
+movimientoReina(X1,Y1,X2,Y2):-
 	not(ficha(X2,Y2,_)),
 	XR is X1-X2,
 	YR is Y1-Y2,
@@ -203,8 +212,7 @@ mov1(X1,Y1,X2,Y2):-
 	moverF(X1,Y1,X2,Y2).
 
 
-mov1(X1,Y1,X2,Y2):-
-	ficha(X1,Y1,3),
+movimientoReina2(X1,Y1,X2,Y2,Z,W):-
 	not(ficha(X2,Y2,_)),
 	XR is X1-X2,
 	YR is Y1-Y2,
@@ -220,7 +228,7 @@ mov1(X1,Y1,X2,Y2):-
 	XB is X2-P1,
 	YB is Y2-P2,
 	verificarReina11(XN,YN,XB,YB,P1,P2),
-	(ficha(XB,YB,2);ficha(XB,YB,4)),
+	(ficha(XB,YB,Z);ficha(XB,YB,W)),
 	retract(ficha(XB,YB,_)),
 	moverF(X1,Y1,X2,Y2),
 	sigoComiendo(X2,Y2).
@@ -282,6 +290,19 @@ mov2(X1,Y1,X2,Y2):-
 	corona2(X2,Y2),
 	sigoComiendo(X2,Y2),
 	!.
+
+
+%Verifica pasos de una reina para el jugador 2
+
+mov2(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,4),
+	movimientoReina(X1,Y1,X2,Y2).
+
+
+mov1(X1,Y1,X2,Y2):-
+	ficha(X1,Y1,4),
+	movimientoReina2(X1,Y1,X2,Y2,1,3).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %predicado que indica si una persona come, luego 
