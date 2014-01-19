@@ -440,7 +440,10 @@ mensaje(Z,W):-
 	ficha(X,Y,Z),
 	write('Movimiento del jugador '),
 	write(W),
-	writeln(': ').
+	writeln(': '),
+	imprimir,
+	mensaje2(Z,W).
+
 mensaje(Z,W):-
 	not(ficha(X,Y,Z)),
 	write('Ha ganado el jugador '),
@@ -451,6 +454,20 @@ mensaje(Z,W):-
 	retract(tocaJugador(_)).
 
 
+%mensaje2(Z,W):-
+%	not(jugada(X,Y,X2,Y2)),
+%	write('No puede jugar el jugador '),
+%	writeln(Z),
+%	write('Debe jugar nuevamente el jugador '),
+%	writeln(W),
+%	retract(tocaJugador(Z)),
+%	assert(tocaJugador(W)).
+
+mensaje2(Z,W):-
+	write('Juega jugador '),
+	writeln(Z).
+
+
 %predicado utilizado para hacer una jugada valida
 jugada(X1,Y1,X2,Y2) :- 
 	tocaJugador(1),
@@ -458,7 +475,6 @@ jugada(X1,Y1,X2,Y2) :-
 	retract(tocaJugador(1)),
 	assert(tocaJugador(2)),
 	mensaje(2,1),
-	imprimir,
 	!.
 
 jugada(X1,Y1,X2,Y2):-
@@ -467,6 +483,5 @@ jugada(X1,Y1,X2,Y2):-
 	retract(tocaJugador(2)),
 	assert(tocaJugador(1)),
 	mensaje(1,2),
-	imprimir,
 	!.
 	
