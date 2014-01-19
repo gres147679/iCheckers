@@ -18,9 +18,27 @@ iniciarTablero:-
 jugar:-
 	iniciarTablero,
 	assert(tocaJugador(1)),
+	verModo,
 	writeln('Comenzo el juego'),
 	imprimir,
 	writeln('Juega jugador 1').
+
+verModo:-
+	writeln('Desea jugar contra la maquina(S/N)'),
+	readln([X|_]),
+	maquinaONo(X).
+
+maquinaONo('S'):-
+	assert(maquina(1)),
+	!.
+
+maquinaONo('N'):-
+	assert(maquina(0)),
+	!.
+
+maquinaONo(_):-
+	verModo.
+	
 
 
 
@@ -538,6 +556,7 @@ jugada(X1,Y1,X2,Y2) :-
 	retract(tocaJugador(1)),
 	assert(tocaJugador(2)),
 	mensaje(2,1),
+	simaquina,
 	!.
 
 jugada(X1,Y1,X2,Y2):-
@@ -548,3 +567,12 @@ jugada(X1,Y1,X2,Y2):-
 	mensaje(1,2),
 	!.
 	
+
+simaquina:- 
+	maquina(1),
+	jugada(X,Y,Z,W).
+
+simaquina:-
+	maquina(0).
+
+
