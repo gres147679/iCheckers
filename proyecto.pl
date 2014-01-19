@@ -235,9 +235,9 @@ sigoComiendo(X1,Y1):-
 	puedoComer(X1,Y1,_,_,_,_),
 	imprimir,
 	writeln('Debe seguir comiendo con la ficha que venia comiendo'),
-	writeln('Diga a que posicion quiere ir, diga su X'),
+	writeln('Diga a que posicion quiere ir, diga la X seguido de un punto (.)'),
 	read(X2),
-	writeln('ahora su Y:'),
+	writeln('ahora la Y seguida de un punto (.):'),
 	read(Y2),
 	puedoComer(X1,Y1,XN2,YN2,X2,Y2),
 	retract(ficha(XN2,YN2,_)),
@@ -365,7 +365,11 @@ mensaje(Z,W):-
 mensaje(Z,W):-
 	not(ficha(X,Y,Z)),
 	write('Ha ganado el jugador '),
-	writeln(W).
+	write(W),
+	writeln(', felicidades. Tablero final:')
+	imprimir,
+	retract(ficha(_,_,_)),
+	retract(tocaJugador(_)).
 
 
 %predicado utilizado para hacer una jugada valida
