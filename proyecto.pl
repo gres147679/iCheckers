@@ -1,6 +1,7 @@
 
-%Comando que inicia el juego, asi como el tablero del mismo
-jugar:- assert(ficha(1,2,1)),assert(ficha(1,4,1)),
+%Predicado que inicia el tablero del juego
+iniciarTablero:- 
+	assert(ficha(1,2,1)),assert(ficha(1,4,1)),
 	assert(ficha(1,6,1)),assert(ficha(1,8,1)),
 	assert(ficha(2,1,1)),assert(ficha(2,3,1)),
 	assert(ficha(2,5,1)),assert(ficha(2,7,1)),
@@ -11,7 +12,11 @@ jugar:- assert(ficha(1,2,1)),assert(ficha(1,4,1)),
 	assert(ficha(7,2,2)),assert(ficha(7,4,2)),
 	assert(ficha(7,6,2)),assert(ficha(7,8,2)),
 	assert(ficha(8,1,2)),assert(ficha(8,3,2)),
-	assert(ficha(8,5,2)),assert(ficha(8,7,2)),
+	assert(ficha(8,5,2)),assert(ficha(8,7,2)).
+
+%Predicado que comienza el juego
+jugar:-
+	iniciarTablero,
 	assert(tocaJugador(1)).
 
 
@@ -238,6 +243,8 @@ sigoComiendo(X1,Y1):-
 	retract(ficha(XN2,YN2,_)),
 	retract(ficha(X1,Y1,Z)),
 	assert(ficha(X2,Y2,Z)),
+	corona1(X2,Y2),
+	corona2(X2,Y2),
 	sigoComiendo(X2,Y2).
 
 
