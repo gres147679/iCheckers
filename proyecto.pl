@@ -368,14 +368,14 @@ ejecutar(X1,Y1,X2,Y2,1,8):-
 
 %Verifica pasos de una reina para el jugador 2
 
-mov2(X1,Y1,X2,Y2):-
+mov2(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,4),
-	movimientoReina(X1,Y1,X2,Y2).
+	movimientoReina(X1,Y1,X2,Y2,TMP).
 
 
-mov1(X1,Y1,X2,Y2):-
+mov2(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,4),
-	movimientoReina2(X1,Y1,X2,Y2,1,3).
+	movimientoReina2(X1,Y1,X2,Y2,1,3,TMP).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
