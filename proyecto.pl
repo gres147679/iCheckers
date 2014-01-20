@@ -338,8 +338,10 @@ ejecutar(X1,Y1,X2,Y2,1,7):-
 	moverF(X1,Y1,X2,Y2),
 	retract(ficha(XF,YF,_)),
 	corona2(X2,Y2),
+	esMaq(X1,Y1,X2,Y2),
 	sigoComiendo(X2,Y2),
 	!.
+
 
 
 %Verifica para comer a derecha
@@ -361,10 +363,22 @@ ejecutar(X1,Y1,X2,Y2,1,8):-
 	moverF(X1,Y1,X2,Y2),
 	retract(ficha(XF,YF,_)),
 	corona2(X2,Y2),
+	esMaq(X1,Y1,X2,Y2),
 	sigoComiendo(X2,Y2),
 	!.
 
 
+esMaq(X,Y,X2,Y2):-
+	maquina(1),
+	write('La maquina ha comido, se movio de la posicion ('),
+	write(X),
+	write(','),
+	write(Y),
+	write(') a la posicion ('),
+	write(X2),
+	write(','),
+	write(Y2),
+	writeln(')').
 
 %Verifica pasos de una reina para el jugador 2
 
@@ -385,9 +399,15 @@ mov2(X1,Y1,X2,Y2,TMP):-
 
 
 sigoComiendo(X1,Y1):-
+	(tocaJugador(1);maquina(0)),
 	puedoComer(X1,Y1,_,_,_,_),
 	imprimir,
-	writeln('Debe seguir comiendo con la ficha que venia comiendo'),
+	write('Actualmente se encuentra en la posicion ('),
+	write(X1),
+	write(','),
+	write(Y1),
+	writeln(')'),
+	writeln('Debe seguir comiendo con la ficha que venia comiendo, inserte una jugada valida'),
 	writeln('Diga a que posicion quiere ir, diga la X seguido de un punto (.)'),
 	read(X2),
 	writeln('ahora la Y seguida de un punto (.):'),
@@ -400,8 +420,27 @@ sigoComiendo(X1,Y1):-
 	corona2(X2,Y2),
 	sigoComiendo(X2,Y2).
 
-
-
+sigoComiendo(X1,Y1):-
+	tocaJugador(2),
+	maquina(1),
+	puedoComer(X1,Y1,XN2,YN2,X2,Y2),
+	writeln('La maquina sigue jugando, mueve ahora la ficha de'),
+	write('La posicion ('),
+	write(X1),
+	write(','),
+	write(Y1),
+	write(') a la posicion ('),
+	write(X2),
+	write(','),
+	write(Y2),
+	writeln(')'),
+	retract(ficha(XN2,YN2,_)),
+	retract(ficha(X1,Y1,Z)),
+	assert(ficha(X2,Y2,Z)),
+	corona1(X2,Y2),
+	corona2(X2,Y2),
+	sigoComiendo(X2,Y2).
+	
 sigoComiendo(X1,Y1):-
 	puedoComer(X1,Y1,_,_,_,_),
 	sigoComiendo(X1,Y1).
@@ -530,16 +569,16 @@ mensaje(Z,W):-
 
 mensaje2(1,2):-
 	not(mov1(X,Y,X2,Y2,0)),
-	write('No puede jugar el jugador 1'),
-	write('Debe jugar nuevamente el jugador 2'),
+	writeln('No puede jugar el jugador 1'),
+	writeln('Debe jugar nuevamente el jugador 2'),
 	retract(tocaJugador(1)),
 	assert(tocaJugador(2)),
 	!.
 
 mensaje2(2,1):-
 	not(mov2(X,Y,X2,Y2,0)),
-	write('No puede jugar el jugador 2'),
-	write('Debe jugar nuevamente el jugador 1'),
+	writeln('No puede jugar el jugador 2'),
+	writeln('Debe jugar nuevamente el jugador 1'),
 	retract(tocaJugador(1)),
 	assert(tocaJugador(2)),
 	!.
