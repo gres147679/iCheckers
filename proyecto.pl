@@ -1,3 +1,6 @@
+%Predicado que limpia la pantalla
+cls :- write('\e[2J').
+
 
 %Predicado que inicia el tablero del juego
 iniciarTablero:- 
@@ -592,6 +595,7 @@ mensaje2(Z,W):-
 jugada(X1,Y1,X2,Y2) :- 
 	tocaJugador(1),
 	mov1(X1,Y1,X2,Y2,1),
+	cls,
 	retract(tocaJugador(1)),
 	assert(tocaJugador(2)),
 	mensaje(2,1),
@@ -601,6 +605,7 @@ jugada(X1,Y1,X2,Y2) :-
 jugada(X1,Y1,X2,Y2):-
 	tocaJugador(2),
 	mov2(X1,Y1,X2,Y2,1),
+	cls,
 	retract(tocaJugador(2)),
 	assert(tocaJugador(1)),
 	mensaje(1,2),
