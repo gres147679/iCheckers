@@ -26,6 +26,7 @@ jugar:-
 	imprimir,
 	writeln('Juega jugador 1').
 
+%Predicado que ve el modo en que quiere jugar un jugador
 verModo:-
 	writeln('Desea jugar contra la maquina(S/N)'),
 	readln([X|_]),
@@ -165,7 +166,7 @@ ejecutar(X1,Y1,X2,Y2,1,1):-
 	moverF(X1,Y1,X2,Y2),
 	corona1(X2,Y2).
 
-
+%Movimiento validos para las fichas del primer jugador
 mov1(X1,Y1,X2,Y2,TMP):-
 	ficha(X1,Y1,1),
 	X2 is (X1+1),
